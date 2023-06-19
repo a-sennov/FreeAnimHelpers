@@ -1,7 +1,12 @@
 # FreeAnimHelpers
-Unreal Engine 5 plugin with some animation helpers.
+Unreal Engine 5.2 plugin with some animation helpers.
 
-Currenty, it contains three useful animation helpers.
+Currenty, it contains four useful animation helpers.
+
+* AnimateIKBones - snap IK bones to their FK parts.
+* FixDAZTwistBones - useful when you are retargetting or importing animation from software that doesn't support DAZ-style child twist bones (like Cascadeur).
+* ResetScale - reset scale of root bone to 1,0 but preserve size of skeletal mesh
+* ResetBoneTranslation - reset translation pf bpnes that were moved during retargetting.
 
 ## Usage
 
