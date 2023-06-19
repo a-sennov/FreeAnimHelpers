@@ -16,12 +16,12 @@ UAnimateIKBones::UAnimateIKBones()
 	if (IKtoFK.Num() == 0)
 	{
 		IKtoFK.Add(TEXT("ik_foot_root"), TEXT("root"));
-		IKtoFK.Add(TEXT("ik_foot_r"), TEXT("foot_r"));
-		IKtoFK.Add(TEXT("ik_foot_l"), TEXT("foot_l"));
+		IKtoFK.Add(TEXT("ik_foot_r"), TEXT("rFoot"));
+		IKtoFK.Add(TEXT("ik_foot_l"), TEXT("lFoot"));
 		IKtoFK.Add(TEXT("ik_hand_root"), TEXT("root"));
-		IKtoFK.Add(TEXT("ik_hand_gun"), TEXT("hand_r"));
-		IKtoFK.Add(TEXT("ik_hand_r"), TEXT("hand_r"));
-		IKtoFK.Add(TEXT("ik_hand_l"), TEXT("hand_l"));
+		IKtoFK.Add(TEXT("ik_hand_gun"), TEXT("rHand"));
+		IKtoFK.Add(TEXT("ik_hand_r"), TEXT("rHand"));
+		IKtoFK.Add(TEXT("ik_hand_l"), TEXT("lHand"));
 	}
 }
 
@@ -92,12 +92,9 @@ void UAnimateIKBones::OnApply_Implementation(UAnimSequence* AnimationSequence)
 
 	for (int32 FrameIndex = 0; FrameIndex < KeysNum; FrameIndex++)
 	{
-		float Time;
-		UAnimationBlueprintLibrary::GetTimeAtFrame(AnimationSequence, FrameIndex, Time);
-
 		for (auto& BonePair : HumanoidBones)
 		{
-			BonePair.Value = UFreeAnimHelpersLibrary::GetBonePositionAtTimeInCS(AnimationSequence, BonePair.Key, Time);
+			BonePair.Value = UFreeAnimHelpersLibrary::GetBonePositionAtTimeInCS(AnimationSequence, BonePair.Key, FrameIndex);
 		}
 
 		for (const auto& BonePair : IKtoFK)
@@ -136,7 +133,9 @@ void UAnimateIKBones::OnApply_Implementation(UAnimSequence* AnimationSequence)
 	{
 		const FName& BoneName = Track.Key;
 		Controller.RemoveBoneTrack(BoneName);
-		Controller.AddBoneTrack(BoneName);
+		if (!Controller.AddBoneCurve(BoneName)) {
+			UE_LOG(LogTemp, Warning, TEXT("Failed to create bone track: %s"), *BoneName.ToString());
+		}
 		Controller.SetBoneTrackKeys(BoneName, Track.Value.PosKeys, Track.Value.RotKeys, Track.Value.ScaleKeys);
 	}
 }

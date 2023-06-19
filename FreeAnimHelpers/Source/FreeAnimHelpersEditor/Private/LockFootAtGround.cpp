@@ -151,7 +151,9 @@ void USnapFootToGround::LegIK(UAnimSequence* AnimationSequence, const FName& Foo
 		float Time;
 		UAnimationBlueprintLibrary::GetTimeAtFrame(AnimationSequence, FrameIndex, Time);
 
-		UAnimationBlueprintLibrary::GetBonePosesForFrame(AnimationSequence, UpdateBoneNames, FrameIndex, false, UpdateBonePoses);
+		for (const auto Bone : UpdateBoneNames) {
+			UpdateBonePoses.Add(AnimationSequence->GetDataModelInterface()->EvaluateBoneTrackTransform(Bone, FrameIndex, EAnimInterpolationType::Linear));
+		}
 		for (int32 i = 0; i < 3; i++)
 		{
 			FixBoneRelativeTransform(AnimationSequence->GetSkeleton(), UpdateBoneIds[UpdateBoneNames[i]], UpdateBonePoses[i]);
@@ -244,7 +246,7 @@ void USnapFootToGround::LegIK(UAnimSequence* AnimationSequence, const FName& Foo
 	for (const auto& Bone : UpdateBoneNames)
 	{
 		Controller.RemoveBoneTrack(Bone);
-		Controller.AddBoneTrack(Bone);
+		Controller.AddBoneCurve(Bone);
 		Controller.SetBoneTrackKeys(Bone, OutTracks[Bone].PosKeys, OutTracks[Bone].RotKeys, OutTracks[Bone].ScaleKeys);
 	}
 }

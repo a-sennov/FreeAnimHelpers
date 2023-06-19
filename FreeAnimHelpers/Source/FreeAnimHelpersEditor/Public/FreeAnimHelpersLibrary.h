@@ -37,11 +37,11 @@ public:
 
 	/* For pose in animation: get bone transform in compnent space */
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Get Bone Transform at Animation Time"), Category = "FreeAnimHelpersLibrary")
-	static FTransform GetBonePositionAtTimeInCS(const UAnimSequence* AnimationSequence, const FName& BoneName, float Time);
+	static FTransform GetBonePositionAtTimeInCS(const UAnimSequence* AnimationSequence, const FName& BoneName, int32 FrameIndex);
 
 	/* For pose in animation: get socket transform in compnent space */
 	UFUNCTION(BlueprintCallable, meta=(DisplayName="Get Socket Transform at Animation Time"), Category = "FreeAnimHelpersLibrary")
-	static FTransform GetSocketPositionAtTimeInCS(const UAnimSequence* AnimationSequence, const FName& SocketName, float Time);
+	static FTransform GetSocketPositionAtTimeInCS(const UAnimSequence* AnimationSequence, const FName& SocketName, int32 FrameIndex);
 
 	UFUNCTION(BlueprintCallable, Category = "FreeAnimHelpersLibrary")
 	static void ResetSkinndeAssetRootBoneScale(USkeletalMesh* SkeletalMesh);
@@ -59,7 +59,7 @@ public:
 	static void ClearVectorCurve(UCurveVector* Curve);
 
 	/* For pose in animation: get bone transform in compnent space (relative to another bone; use for optimization) */
-	static FTransform GetBonePositionAtTimeInCS_ToParent(const UAnimSequence* AnimationSequence, const FName& BoneName, float Time, const FTransform& ParentBonePos, const int32 ParentBoneIndex);
+	static FTransform GetBonePositionAtTimeInCS_ToParent(const UAnimSequence* AnimationSequence, const FName& BoneName, int32 FrameIndex, const FTransform& ParentBonePos, const int32 ParentBoneIndex);
 
 	/* Find axis of rotator the closest to being parallel to the specified vectors. Returns +1.f in Multiplier if co-directed and -1.f otherwise */
 	static EAxis::Type FindCoDirection(const FRotator& BoneRotator, const FVector& Direction, float& ResultMultiplier);

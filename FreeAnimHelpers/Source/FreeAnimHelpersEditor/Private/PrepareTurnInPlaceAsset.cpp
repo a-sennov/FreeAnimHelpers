@@ -127,7 +127,7 @@ void UPrepareTurnInPlaceAsset::OnApply_Implementation(UAnimSequence* AnimationSe
 
 	// Update pelvis
 	Controller.RemoveBoneTrack(PelvisBoneName);
-	Controller.AddBoneTrack(PelvisBoneName);
+	Controller.AddBoneCurve(PelvisBoneName);
 	Controller.SetBoneTrackKeys(PelvisBoneName, OutTrack.PosKeys, OutTrack.RotKeys, OutTrack.ScaleKeys);
 
 	// Fill curves

@@ -73,9 +73,9 @@ FTransform UFreeAnimHelpersLibrary::GetRefSkeletonBonePositionByIndex(const FRef
 	return tr_bone;
 }
 
-FTransform UFreeAnimHelpersLibrary::GetBonePositionAtTimeInCS(const UAnimSequence* AnimationSequence, const FName& BoneName, float Time)
+FTransform UFreeAnimHelpersLibrary::GetBonePositionAtTimeInCS(const UAnimSequence* AnimationSequence, const FName& BoneName, int32 FrameIndex)
 {
-	return GetBonePositionAtTimeInCS_ToParent(AnimationSequence, BoneName, Time, FTransform(), INDEX_NONE);
+	return GetBonePositionAtTimeInCS_ToParent(AnimationSequence, BoneName, FrameIndex, FTransform(), INDEX_NONE);
 }
 
 void UFreeAnimHelpersLibrary::AddFloatCurveKey(UCurveFloat* Curve, float Time, float Value, bool bInterpCubic)
@@ -142,7 +142,7 @@ void UFreeAnimHelpersLibrary::ClearVectorCurve(UCurveVector* Curve)
 	}
 }
 
-FTransform UFreeAnimHelpersLibrary::GetBonePositionAtTimeInCS_ToParent(const UAnimSequence* AnimationSequence, const FName& BoneName, float Time, const FTransform& ParentBonePos, const int32 ParentBoneIndex)
+FTransform UFreeAnimHelpersLibrary::GetBonePositionAtTimeInCS_ToParent(const UAnimSequence* AnimationSequence, const FName& BoneName, int32 FrameIndex, const FTransform& ParentBonePos, const int32 ParentBoneIndex)
 {
 	const FReferenceSkeleton& RefSkeleton = AnimationSequence->GetPreviewMesh()
 		? AnimationSequence->GetPreviewMesh()->GetRefSkeleton()
@@ -157,7 +157,8 @@ FTransform UFreeAnimHelpersLibrary::GetBonePositionAtTimeInCS_ToParent(const UAn
 	while (TransformIndex != INDEX_NONE && TransformIndex != ParentBoneIndex)
 	{
 		FTransform ParentBoneTr;
-		UAnimationBlueprintLibrary::GetBonePoseForTime(AnimationSequence, RefSkeleton.GetBoneName(TransformIndex), Time, false, ParentBoneTr);
+		ParentBoneTr = AnimationSequence->GetDataModel()->EvaluateBoneTrackTransform(RefSkeleton.GetBoneName(TransformIndex), FrameIndex, EAnimInterpolationType::Linear);
+//		UAnimationBlueprintLibrary::GetBonePoseForTime(AnimationSequence, RefSkeleton.GetBoneName(TransformIndex), Time, false, ParentBoneTr);
 
 		EBoneTranslationRetargetingMode::Type RetargetType = Skeleton->GetBoneTranslationRetargetingMode(TransformIndex);
 		if (RetargetType == EBoneTranslationRetargetingMode::Type::Skeleton)
@@ -210,17 +211,17 @@ EAxis::Type UFreeAnimHelpersLibrary::FindCoDirection(const FRotator& BoneRotator
 	return RetAxis;
 }
 
-FTransform UFreeAnimHelpersLibrary::GetSocketPositionAtTimeInCS(const UAnimSequence* AnimationSequence, const FName& SocketName, float Time)
+FTransform UFreeAnimHelpersLibrary::GetSocketPositionAtTimeInCS(const UAnimSequence* AnimationSequence, const FName& SocketName, int32 FrameIndex)
 {
 	const USkeletalMeshSocket* Socket = AnimationSequence->GetSkeleton()->FindSocket(SocketName);
 	if (Socket)
 	{
 		FTransform LocalTransform = FTransform(Socket->RelativeRotation, Socket->RelativeLocation, Socket->RelativeScale);
-		return LocalTransform * GetBonePositionAtTimeInCS(AnimationSequence, Socket->BoneName, Time);
+		return LocalTransform * GetBonePositionAtTimeInCS(AnimationSequence, Socket->BoneName, FrameIndex);
 	}
 	else if (AnimationSequence->GetSkeleton()->GetReferenceSkeleton().FindBoneIndex(SocketName) != INDEX_NONE)
 	{
-		return GetBonePositionAtTimeInCS(AnimationSequence, SocketName, Time);
+		return GetBonePositionAtTimeInCS(AnimationSequence, SocketName, FrameIndex);
 	}
 	else
 	{

@@ -155,7 +155,7 @@ void UTorsoOffset::OnApply_Implementation(UAnimSequence* AnimationSequence)
 	{
 		const FName& BoneName = Track.Key;
 		Controller.RemoveBoneTrack(BoneName);
-		Controller.AddBoneTrack(BoneName);
+		Controller.AddBoneCurve(BoneName);
 		Controller.SetBoneTrackKeys(BoneName, Track.Value.PosKeys, Track.Value.RotKeys, Track.Value.ScaleKeys);
 	}
 }

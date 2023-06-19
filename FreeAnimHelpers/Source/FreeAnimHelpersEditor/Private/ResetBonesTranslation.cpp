@@ -55,7 +55,9 @@ void UResetBonesTranslation::OnApply_Implementation(UAnimSequence* AnimationSequ
 
 	for (int32 FrameIndex = 0; FrameIndex < KeysNum; FrameIndex++)
 	{
-		UAnimationBlueprintLibrary::GetBonePosesForFrame(AnimationSequence, BoneNames, FrameIndex, false, Bones);
+		for (const auto Bone : BoneNames) {
+			Bones.Add(AnimationSequence->GetDataModelInterface()->EvaluateBoneTrackTransform(Bone, FrameIndex, EAnimInterpolationType::Linear));
+		}
 
 		for (int32 Index = 0; Index < BoneNames.Num(); Index++)
 		{
@@ -71,7 +73,7 @@ void UResetBonesTranslation::OnApply_Implementation(UAnimSequence* AnimationSequ
 	for (const auto& BoneName : BoneNames)
 	{
 		Controller.RemoveBoneTrack(BoneName);
-		Controller.AddBoneTrack(BoneName);
+		Controller.AddBoneCurve(BoneName);
 		Controller.SetBoneTrackKeys(BoneName, OutTracks[BoneName].PosKeys, OutTracks[BoneName].RotKeys, OutTracks[BoneName].ScaleKeys);
 	}
 }
