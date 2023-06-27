@@ -41,6 +41,7 @@ public class FreeAnimHelpersEditor : ModuleRules
 				"Slate",
 				"SlateCore",
 
+				"AnimationCore",
 				"AnimationBlueprintLibrary",
 				"AnimationModifiers",
 				"AnimGraphRuntime",
